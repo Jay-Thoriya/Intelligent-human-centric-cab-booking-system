@@ -1,9 +1,27 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import BookingForm from '@/components/BookingForm';
 import RideIllustration from '@/components/RideIllustration';
+import ConfirmationPage from '@/components/ConfirmationPage';
 
 const Index = () => {
+  const [currentStep, setCurrentStep] = useState<'booking' | 'confirmation'>('booking');
+  const [requestId, setRequestId] = useState<string>('');
+
+  const handleConfirmation = (newRequestId: string) => {
+    setRequestId(newRequestId);
+    setCurrentStep('confirmation');
+  };
+
+  const handleStartOver = () => {
+    setCurrentStep('booking');
+    setRequestId('');
+  };
+
+  if (currentStep === 'confirmation') {
+    return <ConfirmationPage onStartOver={handleStartOver} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
@@ -21,7 +39,7 @@ const Index = () => {
         <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
           {/* Form Section */}
           <div className="w-full lg:w-auto flex-shrink-0">
-            <BookingForm />
+            <BookingForm onConfirmation={handleConfirmation} />
           </div>
           
           {/* Illustration Section */}
