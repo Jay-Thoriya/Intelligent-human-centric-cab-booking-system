@@ -55,8 +55,8 @@ const ConfirmationPage = ({ onStartOver }: ConfirmationPageProps) => {
         console.log('Fetched ride request:', rideRequest);
         console.log('Fetched cab driver:', cabDriver);
 
-        // Make the Omnidim API call
-        const success = await callOmnidimDispatch(rideRequest, cabDriver.mobile_number);
+        // Make the Omnidim API call with both ride request and cab driver data
+        const success = await callOmnidimDispatch(rideRequest, cabDriver);
 
         if (success) {
           toast({

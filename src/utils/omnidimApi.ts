@@ -25,16 +25,18 @@ interface OmnidimCallRequest {
   to_number: string;
   call_context: {
     ride_request: RideRequest;
+    cab_driver: CabDriver;
   };
 }
 
-export const callOmnidimDispatch = async (rideRequest: RideRequest, cabDriverPhone: string): Promise<boolean> => {
+export const callOmnidimDispatch = async (rideRequest: RideRequest, cabDriver: CabDriver): Promise<boolean> => {
   try {
     const requestData: OmnidimCallRequest = {
       agent_id: 2678,
-      to_number: cabDriverPhone,
+      to_number: cabDriver.mobile_number,
       call_context: {
-        ride_request: rideRequest
+        ride_request: rideRequest,
+        cab_driver: cabDriver
       }
     };
 
