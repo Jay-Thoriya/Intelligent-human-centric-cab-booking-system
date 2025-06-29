@@ -1,13 +1,89 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import { callOmnidimDispatch } from '@/utils/omnidimApi';
 
 interface ConfirmationPageProps {
   onStartOver: () => void;
 }
 
 const ConfirmationPage = ({ onStartOver }: ConfirmationPageProps) => {
+  useEffect(() => {
+    const triggerOmnidimCall = async () => {
+      try {
+        console.log('Fetching latest ride request and cab driver data...');
+
+        // Fetch the latest ride request
+        const { data: rideRequest, error: rideError } = await supabase
+          .from('ride_requests')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (rideError || !rideRequest) {
+          console.error('Failed to fetch ride request:', rideError);
+          toast({
+            title: "Error",
+            description: "Failed to fetch ride request data for dispatch call.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Fetch the latest cab driver
+        const { data: cabDriver, error: driverError } = await supabase
+          .from('cab_drivers')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (driverError || !cabDriver) {
+          console.error('Failed to fetch cab driver:', driverError);
+          toast({
+            title: "Error",
+            description: "Failed to fetch cab driver data for dispatch call.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        console.log('Fetched ride request:', rideRequest);
+        console.log('Fetched cab driver:', cabDriver);
+
+        // Make the Omnidim API call
+        const success = await callOmnidimDispatch(rideRequest, cabDriver.mobile_number);
+
+        if (success) {
+          toast({
+            title: "Dispatch Call Initiated",
+            description: "Successfully initiated call to cab driver via Omnidim.",
+          });
+        } else {
+          toast({
+            title: "Dispatch Call Failed",
+            description: "Failed to initiate call to cab driver. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('Error in triggerOmnidimCall:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred while initiating the dispatch call.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    // Trigger the API call when the confirmation page loads
+    triggerOmnidimCall();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <div className="text-center max-w-md mx-auto">
