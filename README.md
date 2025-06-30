@@ -29,12 +29,11 @@ An AI‑powered, language‑agnostic cab booking demo that automatically finds, 
 ---
 
 ## 🛠 Tech Stack
-
-- **Backend**: Node.js + Express  
-- **Voice & SMS**: Omnidimension(https://www.omnidim.io)  
-- **Data Storage**: Google Sheets API (via `googleapis` npm package)  
+ 
 - **Frontend (Demo Web App)**: React + Tailwind CSS  
-- **Deployment**:  Vercel 
+- **Voice & SMS**: Omnidimension(https://www.omnidim.io)  
+- **n8n Automation Flow**: 
+- **Deployment**:  [lovable](https://preview--transit-glide-interface.lovable.app/) 
 
 ---
 
@@ -78,10 +77,5 @@ Receive your recommended driver details and fare via an automated callback.
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
 
 
