@@ -1,5 +1,7 @@
 # Welcome
 
+
+
 # Intelligent Human‑Centric Cab Booking System
 
 An AI‑powered, language‑agnostic cab booking demo that automatically finds, calls, and negotiates with local drivers—then presents you the best five‑star, lowest‑fare ride, without you ever having to speak their language.
@@ -107,8 +109,10 @@ Removes outdated or processed driver entries from the Supabase database to keep 
 ![image](https://github.com/user-attachments/assets/e021e3f0-2fcb-4ce2-a4bb-ac9d4c7b9bd7)
 
 💡 Why Use n8n?
+
 Visual Automation: Easily track and modify backend logic through a drag-and-drop interface.
 
 API Orchestration: Seamlessly integrate Supabase, AI-agent call, Google Sheets, and custom APIs.
 
 Low-Code Scaling: Add or update logic quickly without deep redeployment cycles.
+
