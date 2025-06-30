@@ -31,7 +31,7 @@ An AI‑powered, language‑agnostic cab booking demo that automatically finds, 
 ## 🛠 Tech Stack
 
 - **Backend**: Node.js + Express  
-- **Voice & SMS**: [Twilio API](https://www.twilio.com/)  
+- **Voice & SMS**: Omnidimension(https://www.omnidim.io)  
 - **Data Storage**: Google Sheets API (via `googleapis` npm package)  
 - **Frontend (Demo Web App)**: React + Tailwind CSS  
 - **Deployment**:  Vercel 
