@@ -12,9 +12,9 @@ interface ConfirmationPageProps {
 
 const ConfirmationPage = ({ onStartOver }: ConfirmationPageProps) => {
   useEffect(() => {
-    const triggerOmnidimCall = async () => {
+    const triggerOmnidimCalls = async () => {
       try {
-        console.log('Fetching latest ride request and cab driver data...');
+        console.log('Fetching latest ride request and all associated cab drivers...');
 
         // Fetch the latest ride request
         const { data: rideRequest, error: rideError } = await supabase
@@ -28,60 +28,86 @@ const ConfirmationPage = ({ onStartOver }: ConfirmationPageProps) => {
           console.error('Failed to fetch ride request:', rideError);
           toast({
             title: "Error",
-            description: "Failed to fetch ride request data for dispatch call.",
+            description: "Failed to fetch ride request data for dispatch calls.",
             variant: "destructive"
           });
           return;
         }
 
-        // Fetch the latest cab driver
-        const { data: cabDriver, error: driverError } = await supabase
+        // Fetch all cab drivers associated with this ride request
+        const { data: cabDrivers, error: driversError } = await supabase
           .from('cab_drivers')
           .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+          .eq('user_request_id', rideRequest.id)
+          .order('created_at', { ascending: false });
 
-        if (driverError || !cabDriver) {
-          console.error('Failed to fetch cab driver:', driverError);
+        if (driversError || !cabDrivers || cabDrivers.length === 0) {
+          console.error('Failed to fetch cab drivers:', driversError);
           toast({
             title: "Error",
-            description: "Failed to fetch cab driver data for dispatch call.",
+            description: "Failed to fetch cab driver data for dispatch calls.",
             variant: "destructive"
           });
           return;
         }
 
         console.log('Fetched ride request:', rideRequest);
-        console.log('Fetched cab driver:', cabDriver);
+        console.log(`Found ${cabDrivers.length} cab driver(s):`, cabDrivers);
 
-        // Make the Omnidim API call with both ride request and cab driver data
-        const success = await callOmnidimDispatch(rideRequest, cabDriver);
+        // Make Omnidim API calls to all cab drivers
+        let successfulCalls = 0;
+        let failedCalls = 0;
 
-        if (success) {
+        for (const cabDriver of cabDrivers) {
+          try {
+            console.log(`Making dispatch call to driver: ${cabDriver.name} (${cabDriver.mobile_number})`);
+            const success = await callOmnidimDispatch(rideRequest, cabDriver);
+            
+            if (success) {
+              successfulCalls++;
+              console.log(`✅ Successfully called ${cabDriver.name}`);
+            } else {
+              failedCalls++;
+              console.log(`❌ Failed to call ${cabDriver.name}`);
+            }
+          } catch (error) {
+            failedCalls++;
+            console.error(`Error calling ${cabDriver.name}:`, error);
+          }
+        }
+
+        // Show summary toast
+        if (successfulCalls > 0 && failedCalls === 0) {
           toast({
-            title: "Dispatch Call Initiated",
-            description: "Successfully initiated call to cab driver via Omnidim.",
+            title: "All Dispatch Calls Successful",
+            description: `Successfully initiated calls to all ${successfulCalls} cab driver(s) via Omnidim.`,
+          });
+        } else if (successfulCalls > 0 && failedCalls > 0) {
+          toast({
+            title: "Partial Success",
+            description: `${successfulCalls} call(s) successful, ${failedCalls} call(s) failed. Please check the console for details.`,
+            variant: "destructive"
           });
         } else {
           toast({
-            title: "Dispatch Call Failed",
-            description: "Failed to initiate call to cab driver. Please try again.",
+            title: "All Dispatch Calls Failed",
+            description: "Failed to initiate calls to any cab drivers. Please try again.",
             variant: "destructive"
           });
         }
+
       } catch (error) {
-        console.error('Error in triggerOmnidimCall:', error);
+        console.error('Error in triggerOmnidimCalls:', error);
         toast({
           title: "Error",
-          description: "An unexpected error occurred while initiating the dispatch call.",
+          description: "An unexpected error occurred while initiating the dispatch calls.",
           variant: "destructive"
         });
       }
     };
 
-    // Trigger the API call when the confirmation page loads
-    triggerOmnidimCall();
+    // Trigger the API calls when the confirmation page loads
+    triggerOmnidimCalls();
   }, []);
 
   return (
@@ -98,10 +124,10 @@ const ConfirmationPage = ({ onStartOver }: ConfirmationPageProps) => {
             Ride Request Submitted!
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed mb-2">
-            We're finding the best cab options for you.
+            We're contacting all available cab drivers for you.
           </p>
           <p className="text-lg text-gray-600 leading-relaxed">
-            You'll receive a call shortly.
+            You'll receive calls from interested drivers shortly.
           </p>
         </div>
 
@@ -114,11 +140,11 @@ const ConfirmationPage = ({ onStartOver }: ConfirmationPageProps) => {
             </span>
             <span className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              Drivers Notified
+              All Drivers Contacted
             </span>
             <span className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-              Call Incoming
+              Calls Incoming
             </span>
           </div>
         </div>
