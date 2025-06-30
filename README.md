@@ -81,24 +81,34 @@ Workflow Steps
 
 🔄 How It Works
 
-Webhook
+Webhook :
 Triggered automatically after the call with a cab driver ends. It initiates the workflow to process results.
 
-Get Rows (cab drivers)
+Get Rows (cab drivers) :
 Fetches all available cab driver details from the Supabase database.
 
-Get Rows in Sheet
+Get Rows in Sheet :
 Reads all conversation records with drivers from a connected Google Sheet. This sheet contains the driver's availability, fare, vehicle type, and response details.
 
-If Condition
+If Condition :
 (Optional logic) Checks specific conditions like fare limits, vehicle type, or driver availability before proceeding.
 
-HTTP Request
+HTTP Request :
 Calls the backend API to initiate a user callback, providing them with all gathered cab driver options and asking them to confirm the booking.
 
-Clear Sheet
+Clear Sheet :
 Cleans up the Google Sheet by removing temporary or processed driver conversation data.
 
-Delete Row
+Delete Row :
 Removes outdated or processed driver entries from the Supabase database to keep it clean and up-to-date.
 
+📊 Workflow Visualization : 
+
+![image](https://github.com/user-attachments/assets/e021e3f0-2fcb-4ce2-a4bb-ac9d4c7b9bd7)
+
+💡 Why Use n8n?
+Visual Automation: Easily track and modify backend logic through a drag-and-drop interface.
+
+API Orchestration: Seamlessly integrate Supabase, AI-agent call, Google Sheets, and custom APIs.
+
+Low-Code Scaling: Add or update logic quickly without deep redeployment cycles.
