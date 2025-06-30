@@ -31,8 +31,8 @@ An AI‑powered, language‑agnostic cab booking demo that automatically finds, 
 ## 🛠 Tech Stack
  
 - **Frontend (Demo Web App)**: React + Tailwind CSS  
-- **Voice & SMS**: Omnidimension(https://www.omnidim.io)  
-- **n8n Automation Flow**: 
+- **Voice & SMS**: Omnidimension(https://www.omnidim.io)
+- Automation / Call Handling: n8n workflow for orchestrating driver calls and data updates (https://github.com/Jay-Thoriya/Intelligent-human-centric-cab-booking-system/blob/main/public_trasport.json) 
 - **Deployment**:  [lovable](https://preview--transit-glide-interface.lovable.app/) 
 
 ---
@@ -73,9 +73,32 @@ Receive your recommended driver details and fare via an automated callback.
 
 ```
 
-## What technologies are used for this project?
+## ⚙️ n8n Workflow
 
-This project is built with:
+We use an n8n workflow to automate the call handling and data management process.
 
+Workflow Steps
 
+🔄 How It Works
+
+Webhook
+Triggered automatically after the call with a cab driver ends. It initiates the workflow to process results.
+
+Get Rows (cab drivers)
+Fetches all available cab driver details from the Supabase database.
+
+Get Rows in Sheet
+Reads all conversation records with drivers from a connected Google Sheet. This sheet contains the driver's availability, fare, vehicle type, and response details.
+
+If Condition
+(Optional logic) Checks specific conditions like fare limits, vehicle type, or driver availability before proceeding.
+
+HTTP Request
+Calls the backend API to initiate a user callback, providing them with all gathered cab driver options and asking them to confirm the booking.
+
+Clear Sheet
+Cleans up the Google Sheet by removing temporary or processed driver conversation data.
+
+Delete Row
+Removes outdated or processed driver entries from the Supabase database to keep it clean and up-to-date.
 
